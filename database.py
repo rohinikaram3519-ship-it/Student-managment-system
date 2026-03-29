@@ -1,17 +1,27 @@
-import mysql.connector
+import sqlite3
 
 def connect():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root123",
-        database="studentdb"
+    return sqlite3.connect("students.db")
+
+def create_table():
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS student (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        age INTEGER,
+        course TEXT,
+        email TEXT
     )
+    """)
+    conn.commit()
+    conn.close()
 
 def insert(name, age, course, email):
     conn = connect()
     cur = conn.cursor()
-    cur.execute("INSERT INTO student (name, age, course, email) VALUES (%s,%s,%s,%s)",
+    cur.execute("INSERT INTO student (name, age, course, email) VALUES (?,?,?,?)",
                 (name, age, course, email))
     conn.commit()
     conn.close()
@@ -27,17 +37,8 @@ def view():
 def delete(id):
     conn = connect()
     cur = conn.cursor()
-    cur.execute("DELETE FROM student WHERE id=%s", (id,))
+    cur.execute("DELETE FROM student WHERE id=?", (id,))
     conn.commit()
     conn.close()
 
-def update(id, name, age, course, email):
-    conn = connect()
-    cur = conn.cursor()
-    cur.execute("""
-        UPDATE student
-        SET name=%s, age=%s, course=%s, email=%s
-        WHERE id=%s
-    """, (name, age, course, email, id))
-    conn.commit()
-    conn.close()
+create_table()

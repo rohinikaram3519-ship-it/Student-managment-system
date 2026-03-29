@@ -23,4 +23,5 @@ def delete(id):
     database.delete(id)
     return redirect('/')
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run()
